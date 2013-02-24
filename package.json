@@ -1,0 +1,19 @@
+{ "name": "drone"
+, "version": "0.0.2"
+, "description": "dronestuff"
+, "author": "Jonathan Dahan <jonathan@jedahan.com>"
+, "dependencies":
+  { "coffee-script": "1.4.x"
+  , "restify": "2.x.x"
+  , "rethinkdb": "1.2.x"
+  , "swagger-doc": "0.1.x"
+  , "toobusy": "0.2.x"
+  }
+, "scripts":
+  { "start": "coffee server"
+  }
+, "repository" :
+  { "type" : "git"
+  , "url" : "http://github.com/jedahan/drone.git"
+  }
+}
