@@ -22,7 +22,7 @@ server = restify.createServer()
 server.pre restify.pre.userAgentConnection()
 server.use _check_if_busy
 server.use restify.acceptParser server.acceptable # respond correctly to accept headers
-server.use restify.bodyParser()
+server.use restify.bodyParser uploadDir: 'static/uploads'
 server.use restify.fullResponse() # set CORS, eTag, other common headers
 
 newLocation = (req, res, next) ->
