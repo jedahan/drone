@@ -77,7 +77,7 @@ getVideos = (req, res, next) ->
 ###
   API
 ###
-#swagger.configure server
+swagger.configure server
 server.put  "/location", newLocation
 server.get  "/location", getLocation
 server.get  "/locations", getLocations
@@ -89,29 +89,29 @@ server.get "/video", getVideo
 server.get "/videos", getVideos
 
 ###
-docs = swagger.createResource '/location'
-docs.put "/location", "Upload a new drone location",
-  nickname: "newLocation"
-docs.get "/location", "Gets list of locations for a uuid",
-  nickname: "getLocation"
-  parameters: [
-    { name: 'uuid', description: 'uuid', required: true, dataType: 'int', paramType: 'query' }
-  ]
-  errorResponses: [
-    { code: 404, reason: "uuid not found" }
-  ]
-###
-
-###
-docs = swagger.createResource '/uuid'
-docs.get "/ids", "Gets list of uuids in",
-  nickname: "getIds"
-###
-###
   Documentation
 ###
-server.get /\/*/, restify.serveStatic directory: './static', default: 'index.html'
+docs = swagger.createResource 'location'
+docs.put "/location", "Upload a new drone location",
+  nickname: "newLocation"
 
+docs.get "/location", "Gets the last known location for a uuid",
+  nickname: "getLocation",
+  parameters: [
+    { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
+  ]
+
+docs.get "/locations", "Gets all the known locations for a uuid",
+  nickname: "getLocations",
+  parameters: [
+    { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
+  ]
+
+docs = swagger.createResource 'users'
+docs.get "/users", "Gets list of unique users",
+  nickname: "getUsers"
+
+server.get /\/*/, restify.serveStatic directory: './static', default: 'index.html'
 
 server.listen process.env.PORT or 8081, ->
   console.log "[%s] #{server.name} listening at #{server.url}", process.pid
