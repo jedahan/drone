@@ -1,2 +1,2 @@
-database: couchdb
+database: mongod
 server: coffee server
