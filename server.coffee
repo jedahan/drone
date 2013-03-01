@@ -32,21 +32,47 @@ newLocation = (req, res, next) ->
   distance = parseFloat req.params.distance
   currentTime = new Date req.params.currentTime
   appname = req.params.appname
-  console.log location = { uuid, lng, lat, distance, currentTime, appname, _rev: currentTime }
   
-  drone.insert location, uuid, (err, body) ->
-    if err and err.message is 'no_db_file'
-      nano.db.create 'drone'
-      res.send 'db initialised'
-    else
-      res.send body
-  
-getLocation = (req, res, next) ->
-  id = JSON.parse(req.body).uuid
-  drone.get id, revs_info: true, (err, body) -> res.send body
+  res.send locations.insert { uuid, lng, lat, distance, currentTime, appname }
 
-getIds = (req, res, next) ->
-  res.send r.table('locations')('uuid').runp()
+getLocations = (req, res, next) ->
+  uuid = JSON.parse(req.body).uuid
+  locations.find(uuid).toArray (err, body) ->
+    console.error err if err
+    res.send body
+
+getLocation = (req, res, next) ->
+  uuid = JSON.parse(req.body).uuid
+  locations.findOne {uuid}, (err, body) ->
+    console.error err if err
+    res.send body
+
+getUsers = (req, res, next) ->
+  locations.distinct "uuid", (err, body) ->
+    res.send body
+
+newVideo = (req, res, next) ->
+  currentTime = new Date req.params.currentTime
+  uuid = req.params.uuid
+  data = server.url + '/' + req.files.data.path
+  direction = req.params.direction or null
+  videos.insert {uuid, currentTime, data, direction}
+  res.send data
+
+getVideo = (req, res, next) ->
+  uuid = JSON.parse(req.body).uuid
+  direction = JSON.parse(req.body).direction or null
+  async.filter {uuid, direction}, _exists, (filter) ->
+    videos.findOne filter, (err, body) ->
+      res.send body
+
+getVideos = (req, res, next) ->
+  uuid = JSON.parse(req.body).uuid
+  direction = JSON.parse(req.body).direction or null
+  async.filter {uuid, direction}, _exists, (filter) ->
+    videos.find(filter).toArray (err, body) ->
+      console.error err if err
+      res.send body
 
 ###
   API
@@ -54,6 +80,14 @@ getIds = (req, res, next) ->
 #swagger.configure server
 server.put  "/location", newLocation
 server.get  "/location", getLocation
+server.get  "/locations", getLocations
+
+server.get  "/users", getUsers
+
+server.put "/video", newVideo
+server.get "/video", getVideo
+server.get "/videos", getVideos
+
 ###
 docs = swagger.createResource '/location'
 docs.put "/location", "Upload a new drone location",
@@ -67,7 +101,7 @@ docs.get "/location", "Gets list of locations for a uuid",
     { code: 404, reason: "uuid not found" }
   ]
 ###
-server.get  "/ids", getIds
+
 ###
 docs = swagger.createResource '/uuid'
 docs.get "/ids", "Gets list of uuids in",
