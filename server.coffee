@@ -1,44 +1,54 @@
 restify = require 'restify'
 swagger = require 'swagger-doc'
 toobusy = require 'toobusy'
-r = require 'rethinkdb'
-r.connect { host: 'localhost', port: 28015 }, (conn) ->
-  r.db('drone').tableCreate('location').run()
+nano = require('nano')('http://localhost:5984')
+drone = nano.use 'drone'
 
-###
-  Server Options
-###
+_check_if_busy = (req, res, next) ->
+  if toobusy()
+    res.send 503, "I'm busy right now, sorry."
+  else next()
+
 server = restify.createServer()
 server.pre restify.pre.userAgentConnection()
 server.use _check_if_busy
 server.use restify.acceptParser server.acceptable # respond correctly to accept headers
+server.use restify.bodyParser()
 server.use restify.fullResponse() # set CORS, eTag, other common headers
 
 newLocation = (req, res, next) ->
   uuid = req.params.uuid
-  long = parseFloat req.params.long
+  lng = parseFloat req.params.lng
   lat = parseFloat req.params.lat
   distance = parseFloat req.params.distance
   currentTime = new Date req.params.currentTime
   appname = req.params.appname
-
-  location = { uuid, long, lat, distance, currentTime, appname }
-  r.db('drone').table('locations').insert(location).run()
-
+  console.log location = { uuid, lng, lat, distance, currentTime, appname, _rev: currentTime }
+  
+  drone.insert location, uuid, (err, body) ->
+    if err and err.message is 'no_db_file'
+      nano.db.create 'drone'
+      res.send 'db initialised'
+    else
+      res.send body
+  
 getLocation = (req, res, next) ->
-  uuid = req.params.uuid
-  res.send r.db('drone').table('locations').filter({'uuid': uuid}).run()
+  id = JSON.parse(req.body).uuid
+  drone.get id, revs_info: true, (err, body) -> res.send body
+
+getIds = (req, res, next) ->
+  res.send r.table('locations')('uuid').runp()
 
 ###
   API
 ###
-swagger.configure server
+#swagger.configure server
 server.put  "/location", newLocation
 server.get  "/location", getLocation
-
+###
 docs = swagger.createResource '/location'
 docs.put "/location", "Upload a new drone location",
-  nickname: "newDroneLocation"
+  nickname: "newLocation"
 docs.get "/location", "Gets list of locations for a uuid",
   nickname: "getLocation"
   parameters: [
@@ -47,11 +57,13 @@ docs.get "/location", "Gets list of locations for a uuid",
   errorResponses: [
     { code: 404, reason: "uuid not found" }
   ]
-
+###
 server.get  "/ids", getIds
+###
 docs = swagger.createResource '/uuid'
 docs.get "/ids", "Gets list of uuids in",
   nickname: "getIds"
+###
 ###
   Documentation
 ###

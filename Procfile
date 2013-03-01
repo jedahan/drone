@@ -1,2 +1,2 @@
+database: couchdb
 server: coffee server
-database: rethinkdb
