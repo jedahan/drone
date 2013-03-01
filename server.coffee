@@ -35,13 +35,15 @@ server.use restify.fullResponse() # set CORS, eTag, other common headers
 newGcm = (req, res, next) ->
   uuid = req.params.uuid
   appname = req.params.appname
-  
+  stop = req.params.stop
+  heartbeat = new Date().getTime()
+
   gcm.findOne {uuid, appname}, (err, body) ->
     console.error err if err
     if body?
       res.send body
     else
-      res.send gcm.insert { uuid, appname }
+      res.send gcm.insert { uuid, appname, stop, heartbeat }
 
 # get a list of uuids by appname
 getGcm = (req, res, next) ->
@@ -117,8 +119,8 @@ server.put "/video", newVideo
 server.get "/video", getVideo
 server.get "/videos", getVideos
 
-server.put "/gcm", newGcm
-server.get "/gcm", getGcm
+server.put "/live", newGcm
+server.get "/live", getGcm
 
 server.get "/appnames", getAppnames
 ###
