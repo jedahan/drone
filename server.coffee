@@ -16,6 +16,8 @@ _check_if_busy = (req, res, next) ->
     res.send 503, "I'm busy right now, sorry."
   else next()
 
+_exists = (item, cb) -> cb item?
+
 server = restify.createServer()
 server.pre restify.pre.userAgentConnection()
 server.use _check_if_busy
