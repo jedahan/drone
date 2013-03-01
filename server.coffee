@@ -1,8 +1,15 @@
 restify = require 'restify'
 swagger = require 'swagger-doc'
 toobusy = require 'toobusy'
-nano = require('nano')('http://localhost:5984')
-drone = nano.use 'drone'
+fs = require 'fs'
+async = require 'async'
+Mongolian = require 'mongolian'
+mongolian = new Mongolian
+ObjectId = Mongolian.ObjectId
+ObjectId.prototype.toJSON = ObjectId.prototype.toString
+db = mongolian.db 'drone'
+locations = db.collection 'locations'
+videos = db.collection 'videos'
 
 _check_if_busy = (req, res, next) ->
   if toobusy()
