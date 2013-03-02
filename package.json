@@ -3,7 +3,8 @@
 , "description": "dronestuff"
 , "author": "Jonathan Dahan <jonathan@jedahan.com>"
 , "dependencies":
-  { "coffee-script": "1.5.x"
+  { "async": "0.2.x"
+  , "coffee-script": "1.5.x"
   , "restify": "2.2.x"
   , "rethinkdb": "1.2.x"
   , "swagger-doc": "0.1.x"
