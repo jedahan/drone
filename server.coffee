@@ -91,7 +91,7 @@ getUsers = (req, res, next) ->
 
 newVideo = (req, res, next) ->
   uuid = req.query.uuid
-  data = server.url + '/' + req.files.data.path
+  data = req.href + req.files.data.path.match(/static(.*)/)[1]
   videos.insert {uuid, data}, (err, doc) ->
     res.send doc
 
