@@ -98,15 +98,15 @@ newVideo = (req, res, next) ->
       res.send body
 
 getVideo = (req, res, next) ->
-  uuid = JSON.parse(req.body).uuid
-  direction = JSON.parse(req.body).direction or null
+  uuid = req.query.uuid
+  direction = req.query.direction or null
   async.filter {uuid, direction}, _exists, (filter) ->
     videos.findOne filter, (err, body) ->
       res.send body
 
 getVideos = (req, res, next) ->
-  uuid = JSON.parse(req.body).uuid
-  direction = JSON.parse(req.body).direction or null
+  uuid = req.query.uuid
+  direction = req.query.direction or null
   async.filter {uuid, direction}, _exists, (filter) ->
     videos.find(filter).toArray (err, body) ->
       console.error err if err
