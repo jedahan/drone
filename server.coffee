@@ -34,25 +34,25 @@ server.use restify.fullResponse() # set CORS, eTag, other common headers
 
 
 # when the app starts, register its gcm if its not in the db
-newGcm = (req, res, next) ->
+setGcm = (req, res, next) ->
   uuid = req.params.uuid
   appname = req.params.appname
-  stop = req.params.stop
-  heartbeat = new Date().getTime()
 
   gcm.findOne {uuid, appname}, (err, body) ->
     console.error err if err
     if body?
       res.send body
     else
-      res.send gcm.insert { uuid, appname, stop, heartbeat }
+      gcm.insert {uuid, appname}, (err, doc) ->
+        console.error err if err
+        res.send doc
 
 # get a list of uuids by appname
 getGcm = (req, res, next) ->
-  appname = JSON.parse(req.body).appname
-  gcm.find(appname).toArray (err, body) ->
+  appname = req.query.appname
+  gcm.find({appname}).toArray (err, doc) ->
     console.error err if err
-    res.send body
+    res.send doc
 
 getAppnames = (req, res, next) ->
   gcm.distinct 'appname', (err, body) ->
@@ -110,6 +110,7 @@ getVideos = (req, res, next) ->
 setDancing = (req, res, next) ->
   uuid = req.params.uuid
   dancing = req.params.dancing
+
   dancings.findOne {uuid}, (err, body) ->
     console.error err if err
     if body?
@@ -141,8 +142,8 @@ server.post "/video", newVideo
 server.get "/video", getVideo
 server.get "/videos", getVideos
 
-server.put "/live", newGcm
-server.get "/live", getGcm
+server.put "/gcm", setGcm
+server.get "/gcm", getGcm
 
 server.put "/dancing", setDancing
 server.get "/dancing", getDancing
@@ -177,7 +178,7 @@ docs.get "/locations", "Gets all the known locations for a uuid",
 
 docs = swagger.createResource '/killer_gcm'
 docs.put "/gcm", "Register a gcm connection",
-  nickname: "newGcm"
+  nickname: "setGcm"
   parameters: [
     { name: 'appname', description: 'package appname', required: true, dataType: 'string', paramType: 'query' }
     { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
