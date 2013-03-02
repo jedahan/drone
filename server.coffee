@@ -72,8 +72,9 @@ newLocation = (req, res, next) ->
 getLocations = (req, res, next) ->
   uuid = req.query.uuid
   if uuid?
-    locations.find(uuid).toArray (err, body) ->
+    locations.find({uuid}).toArray (err, body) ->
       console.error err if err
+      console.log body
       res.send body
   else
     locations.find().toArray (err, body) ->
@@ -81,7 +82,7 @@ getLocations = (req, res, next) ->
       res.send body
 
 getLocation = (req, res, next) ->
-  uuid = JSON.parse(req.body).uuid
+  uuid = req.query.uuid
   locations.findOne {uuid}, (err, body) ->
     console.error err if err
     res.send body
