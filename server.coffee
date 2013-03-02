@@ -13,6 +13,7 @@ db = mongolian.db 'drone'
 
 # Collections
 locations = db.collection 'locations'
+dancings = db.collection 'dancings'
 videos = db.collection 'videos'
 gcm = db.collection 'gcm'
 
@@ -26,6 +27,7 @@ _exists = (item, cb) -> cb item?
 server = restify.createServer()
 server.pre restify.pre.userAgentConnection()
 server.use _check_if_busy
+server.use restify.queryParser()
 server.use restify.acceptParser server.acceptable # respond correctly to accept headers
 server.use restify.bodyParser uploadDir: 'static/uploads'
 server.use restify.fullResponse() # set CORS, eTag, other common headers
@@ -105,6 +107,26 @@ getVideos = (req, res, next) ->
       console.error err if err
       res.send body
 
+setDancing = (req, res, next) ->
+  uuid = req.params.uuid
+  dancing = req.params.dancing
+  dancings.findOne {uuid}, (err, body) ->
+    console.error err if err
+    if body?
+      dancings.update {uuid}, $set: {dancing}, (err, doc) ->
+        console.error err if err
+        res.send doc
+    else
+      dancings.insert {uuid, dancing}, (err, doc) ->
+        console.error err if err
+        res.send doc
+
+getDancing = (req, res, next) ->
+  uuid = req.query.uuid
+  dancings.findOne {uuid}, (err, doc) ->
+    console.error err if err
+    res.send doc
+
 ###
   API
 ###
@@ -115,12 +137,15 @@ server.get  "/locations", getLocations
 
 server.get  "/users", getUsers
 
-server.put "/video", newVideo
+server.post "/video", newVideo
 server.get "/video", getVideo
 server.get "/videos", getVideos
 
 server.put "/live", newGcm
 server.get "/live", getGcm
+
+server.put "/dancing", setDancing
+server.get "/dancing", getDancing
 
 server.get "/appnames", getAppnames
 ###
@@ -166,6 +191,34 @@ docs.get "/gcm", "Gets all the uuids for a particular appname",
 
 docs.get "/apps", "Gets all the registered packagenames/appnames",
   nickname: "getApps"
+
+docs = swagger.createResource '/killer_dancing'
+docs.put "/dancing", "Register or update someones dancing status",
+  nickname: "setDancing"
+  parameters: [
+    { name: 'dancing', description: 'dancing?', required: true, dataType: 'boolean', paramType: 'query' }
+    { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
+  ]
+
+docs.get "/dancing", "Gets all the uuids for a particular appname",
+  nickname: "getDancing"
+  parameters: [
+    { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
+  ]
+
+docs = swagger.createResource '/killer_video'
+docs.post "/video", "Register or update someones dancing status",
+  nickname: "newVideo"
+  parameters: [
+    { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
+    { name: 'data', description: 'video data', required: true, dataType: 'string', paramType: 'body' }
+  ]
+
+docs.get "/dancing", "Gets all the uuids for a particular appname",
+  nickname: "getDancing"
+  parameters: [
+    { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
+  ]
 
 docs = swagger.createResource '/killer_users'
 docs.get "/users", "Gets list of unique users",
