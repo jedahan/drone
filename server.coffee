@@ -90,12 +90,12 @@ getUsers = (req, res, next) ->
     res.send body
 
 newVideo = (req, res, next) ->
-  currentTime = new Date req.params.currentTime
   uuid = req.params.uuid
   data = server.url + '/' + req.files.data.path
   direction = req.params.direction or null
-  videos.insert {uuid, currentTime, data, direction}
-  res.send data
+  async.filter {uuid, data, direction}, _exists, (filter) ->
+    videos.insert filter, (err, body) ->
+      res.send body
 
 getVideo = (req, res, next) ->
   uuid = JSON.parse(req.body).uuid
@@ -224,6 +224,7 @@ docs.get "/video", "Gets all the video uploads for a particular uuid",
   nickname: "getVideo"
   parameters: [
     { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
+    { name: 'direction', description: 'direction', required: false, dataType: 'string', paramType: 'query' }
   ]
 
 docs = swagger.createResource '/killer_users'
