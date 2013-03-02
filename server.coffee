@@ -66,7 +66,8 @@ newLocation = (req, res, next) ->
   currentTime = new Date()
   appname = req.params.appname
   
-  res.send locations.insert { uuid, lng, lat, distance, currentTime, appname }
+  locations.insert { uuid, lng, lat, distance, currentTime, appname }, (err, doc) ->
+    res.send doc
 
 getLocations = (req, res, next) ->
   uuid = JSON.parse(req.body).uuid
