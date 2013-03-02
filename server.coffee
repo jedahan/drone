@@ -74,7 +74,6 @@ getLocations = (req, res, next) ->
   if uuid?
     locations.find({uuid}).toArray (err, body) ->
       console.error err if err
-      console.log body
       res.send body
   else
     locations.find().toArray (err, body) ->
