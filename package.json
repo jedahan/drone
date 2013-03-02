@@ -7,6 +7,7 @@
   , "coffee-script": "1.5.x"
   , "restify": "2.2.x"
   , "rethinkdb": "1.2.x"
+  , "mongolian": "0.1.x"
   , "swagger-doc": "0.1.x"
   , "toobusy": "0.2.x"
   }
