@@ -170,13 +170,13 @@ docs.put "/location", "Upload a new drone location",
 docs.get "/location", "Gets the last known location for a uuid",
   nickname: "getLocation"
   parameters: [
-    { name: 'uuid', description: 'uuid', required: false, dataType: 'string', paramType: 'query' }
+    { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
   ]
 
-docs.get "/locations", "Gets all the known locations for a uuid",
+docs.get "/locations", "Gets all the known locations (optionally by uuid)",
   nickname: "getLocations"
   parameters: [
-    { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
+    { name: 'uuid', description: 'uuid', required: false, dataType: 'string', paramType: 'query' }
   ]
 
 docs = swagger.createResource '/killer_gcm'
