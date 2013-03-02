@@ -1,4 +1,5 @@
 
     apt-get install mongodb
+    gem install foreman
     npm install
-    npm start
+    foreman start
