@@ -63,7 +63,7 @@ newLocation = (req, res, next) ->
   lng = parseFloat req.params.lng
   lat = parseFloat req.params.lat
   distance = parseFloat req.params.distance
-  currentTime = new Date req.params.currentTime
+  currentTime = new Date()
   appname = req.params.appname
   
   res.send locations.insert { uuid, lng, lat, distance, currentTime, appname }
@@ -164,7 +164,6 @@ docs.put "/location", "Upload a new drone location",
     { name: 'lat', description: 'latitude', required: true, dataType: 'long', paramType: 'query' }
     { name: 'lng', description: 'longitude', required: true, dataType: 'long', paramType: 'query' }
     { name: 'distance', description: 'distance from 319 scholes in m', required: true, dataType: 'int', paramType: 'query' }
-    { name: 'currentTime', description: 'datetime', required: true, dataType: 'Date', paramType: 'query' }
   ]
 
 docs.get "/location", "Gets the last known location for a uuid",
