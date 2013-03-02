@@ -220,8 +220,8 @@ docs.post "/video", "Register or update someones dancing status",
     { name: 'data', description: 'video data', required: true, dataType: 'string', paramType: 'body' }
   ]
 
-docs.get "/dancing", "Gets all the uuids for a particular appname",
-  nickname: "getDancing"
+docs.get "/video", "Gets all the video uploads for a particular uuid",
+  nickname: "getVideo"
   parameters: [
     { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
   ]
