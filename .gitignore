@@ -1,4 +1,4 @@
-static/
 node_modules
+static/uploads/*
 server.js
 .DS_Store
