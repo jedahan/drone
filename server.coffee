@@ -217,7 +217,7 @@ docs.post "/video", "Register or update someones dancing status",
   nickname: "newVideo"
   parameters: [
     { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
-    { name: 'data', description: 'video data', required: true, dataType: 'string', paramType: 'body' }
+    { name: 'data', description: 'video data', required: true, dataType: 'file', paramType: 'body' }
   ]
 
 docs.get "/video", "Gets all the video uploads for a particular uuid",
