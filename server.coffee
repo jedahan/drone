@@ -90,9 +90,9 @@ getUsers = (req, res, next) ->
     res.send body
 
 newVideo = (req, res, next) ->
-  uuid = req.params.uuid
-  data = server.url + '/' + req.files.data.path
-  direction = req.params.direction or null
+  console.log uuid = req.params.uuid
+  console.log data = server.url + '/' + req.files.data.path
+  console.log direction = req.params.direction or null
   async.filter {uuid, data, direction}, _exists, (filter) ->
     videos.insert filter, (err, body) ->
       res.send body
@@ -218,6 +218,7 @@ docs.post "/video", "Register or update someones dancing status",
   parameters: [
     { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
     { name: 'data', description: 'video data', required: true, dataType: 'file', paramType: 'body' }
+    { name: 'direction', description: 'direction', required: false, dataType: 'string', paramType: 'query' }
   ]
 
 docs.get "/video", "Gets all the video uploads for a particular uuid",
