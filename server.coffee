@@ -90,9 +90,9 @@ getUsers = (req, res, next) ->
     res.send body
 
 newVideo = (req, res, next) ->
-  console.log uuid = req.params.uuid
+  console.log uuid = req.query.uuid
   console.log data = server.url + '/' + req.files.data.path
-  console.log direction = req.params.direction or null
+  console.log direction = req.query.direction or null
   async.filter {uuid, data, direction}, _exists, (filter) ->
     videos.insert filter, (err, body) ->
       res.send body
