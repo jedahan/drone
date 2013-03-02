@@ -70,9 +70,14 @@ newLocation = (req, res, next) ->
 
 getLocations = (req, res, next) ->
   uuid = JSON.parse(req.body).uuid
-  locations.find(uuid).toArray (err, body) ->
-    console.error err if err
-    res.send body
+  if uuid?
+    locations.find(uuid).toArray (err, body) ->
+      console.error err if err
+      res.send body
+  else
+    locations.find().toArray (err, body) ->
+      console.error err if err
+      res.send body
 
 getLocation = (req, res, next) ->
   uuid = JSON.parse(req.body).uuid
@@ -167,7 +172,7 @@ docs.put "/location", "Upload a new drone location",
 docs.get "/location", "Gets the last known location for a uuid",
   nickname: "getLocation"
   parameters: [
-    { name: 'uuid', description: 'uuid', required: true, dataType: 'string', paramType: 'query' }
+    { name: 'uuid', description: 'uuid', required: false, dataType: 'string', paramType: 'query' }
   ]
 
 docs.get "/locations", "Gets all the known locations for a uuid",
