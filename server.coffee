@@ -86,6 +86,7 @@ getLocation = (req, res, next) ->
     res.send body
 
 getUsers = (req, res, next) ->
+  console.log req.headers
   locations.distinct "uuid", (err, body) ->
     res.send body
 
