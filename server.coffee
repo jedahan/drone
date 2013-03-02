@@ -86,13 +86,12 @@ getLocation = (req, res, next) ->
     res.send body
 
 getUsers = (req, res, next) ->
-  console.log req.headers
   locations.distinct "uuid", (err, body) ->
     res.send body
 
 newVideo = (req, res, next) ->
   uuid = req.query.uuid
-  data = req.getHref() + req.files.data.path.match(/static(.*)/)[1]
+  data = req.headers.host + req.files.data.path.match(/static(.*)/)[1]
   videos.insert {uuid, data}, (err, doc) ->
     res.send doc
 
